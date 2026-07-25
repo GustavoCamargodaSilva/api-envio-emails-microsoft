@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><title>Convite</title></head>
+<body style="font-family: Arial, sans-serif; line-height: 1.5; color: #222;">
+  <p>Olá{{if .Nome}}, <strong>{{.Nome}}</strong>{{end}}!</p>
+  <p>Você recebeu um convite.</p>
+  {{if .LinkConvite}}
+  <p><a href="{{.LinkConvite}}">Aceitar convite</a></p>
+  {{end}}
+  {{if .ExpiraEm}}
+  <p>Este convite expira em: {{.ExpiraEm}}</p>
+  {{end}}
+  <p>Atenciosamente,<br>{{.RemetenteNome}}</p>
+</body>
+</html>

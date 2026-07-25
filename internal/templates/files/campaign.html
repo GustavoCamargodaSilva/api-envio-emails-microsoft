@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><title>Campanha</title></head>
+<body style="font-family: Arial, sans-serif; line-height: 1.5; color: #222;">
+  <h2 style="margin-bottom: 0.5rem;">{{.Titulo}}</h2>
+  <p>Olá{{if .Nome}}, <strong>{{.Nome}}</strong>{{end}}!</p>
+  <div>{{.Conteudo}}</div>
+  {{if .LinkCTA}}
+  <p style="margin-top: 1.5rem;"><a href="{{.LinkCTA}}">{{if .TextoCTA}}{{.TextoCTA}}{{else}}Saiba mais{{end}}</a></p>
+  {{end}}
+  <p style="margin-top: 2rem; font-size: 0.9rem; color: #666;">
+    Enviado por {{.RemetenteNome}}
+  </p>
+</body>
+</html>

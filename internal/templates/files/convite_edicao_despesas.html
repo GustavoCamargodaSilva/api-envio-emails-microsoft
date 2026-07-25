@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><title>Convite para editar despesas</title></head>
+<body style="font-family: Arial, sans-serif; line-height: 1.5; color: #222;">
+  <p>
+    Olá <strong>{{.EmailConvidado}}</strong>, você está sendo convidado para participar
+    da edição das despesas financeiras pelo <strong>{{.NomeUsuarioLogado}}</strong>.
+  </p>
+  <p>Seja muito bem-vindo(a) à plataforma de finanças pessoais.</p>
+  {{if .LinkAceite}}
+  <p><a href="{{.LinkAceite}}">Aceitar convite</a></p>
+  {{end}}
+</body>
+</html>

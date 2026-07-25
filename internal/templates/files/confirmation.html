@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><title>Confirmação</title></head>
+<body style="font-family: Arial, sans-serif; line-height: 1.5; color: #222;">
+  <p>Olá{{if .Nome}}, <strong>{{.Nome}}</strong>{{end}}!</p>
+  <p>Confirmamos a sua ação{{if .Acao}}: <strong>{{.Acao}}</strong>{{end}}.</p>
+  {{if .Detalhes}}
+  <p>{{.Detalhes}}</p>
+  {{end}}
+  <p>Atenciosamente,<br>{{.RemetenteNome}}</p>
+</body>
+</html>

@@ -1,0 +1,8 @@
+.env
+data/tokens.json
+data/*.json
+bin/
+*.exe
+*.test
+.idea/
+.vscode/

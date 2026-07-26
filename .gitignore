@@ -1,6 +1,11 @@
-
+# Secrets e tokens locais — nunca versionar
+.env
+.env.*
+!.env.example
 data/tokens.json
 data/*.json
+
+# Build / IDE
 bin/
 *.exe
 *.test

@@ -35,11 +35,33 @@ func Load() (Config, error) {
 		TokenStorePath: getEnv("TOKEN_STORE_PATH", "./data/tokens.json"),
 	}
 
-	if cfg.APIKey == "" {
-		return Config{}, fmt.Errorf("API_KEY é obrigatória")
+	if err := validateAPIKey(cfg.APIKey); err != nil {
+		return Config{}, err
 	}
 
 	return cfg, nil
+}
+
+// chaves de desenvolvimento conhecidas que não podem ser usadas em produção.
+var weakAPIKeys = map[string]struct{}{
+	"dev-localhost": {},
+	"changeme":      {},
+	"secret":        {},
+	"dev":           {},
+	"test":          {},
+}
+
+func validateAPIKey(key string) error {
+	if key == "" {
+		return fmt.Errorf("API_KEY é obrigatória")
+	}
+	if len(key) < 24 {
+		return fmt.Errorf("API_KEY muito curta: use ao menos 24 caracteres aleatórios")
+	}
+	if _, weak := weakAPIKeys[strings.ToLower(strings.TrimSpace(key))]; weak {
+		return fmt.Errorf("API_KEY está usando um valor de desenvolvimento fraco; gere uma chave aleatória forte")
+	}
+	return nil
 }
 
 func (c Config) ValidateMicrosoft() error {

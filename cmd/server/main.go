@@ -32,7 +32,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:              ":" + cfg.Port,
-		Handler:           loggingMiddleware(router),
+		Handler:           httpapi.SecurityHeaders(loggingMiddleware(router)),
 		ReadHeaderTimeout: 10 * time.Second,
 	}
 

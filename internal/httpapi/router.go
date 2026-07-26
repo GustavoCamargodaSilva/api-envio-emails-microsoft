@@ -2,6 +2,7 @@ package httpapi
 
 import (
 	"net/http"
+	"time"
 )
 
 func NewRouter(h *Handler, apiKey string) http.Handler {
@@ -21,7 +22,10 @@ func NewRouter(h *Handler, apiKey string) http.Handler {
 	protected.HandleFunc("POST /v1/emails/confirmations", h.SendConfirmation)
 	protected.HandleFunc("POST /v1/emails/campaigns", h.SendCampaign)
 
-	mux.Handle("/v1/", APIKeyMiddleware(apiKey)(protected))
+	// Rate limiting por IP como defesa em profundidade contra abuso caso a
+	// API key seja comprometida (60 req/min por origem).
+	limited := RateLimitMiddleware(60, time.Minute)(protected)
+	mux.Handle("/v1/", APIKeyMiddleware(apiKey)(limited))
 
 	return mux
 }

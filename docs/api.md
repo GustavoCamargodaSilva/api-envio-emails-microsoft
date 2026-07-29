@@ -19,8 +19,8 @@ Authorization: Bearer <your-api-key>
 | Rota | Auth |
 |------|------|
 | `GET /health` | Público |
-| `GET /v1/oauth/microsoft/login` | Público |
-| `GET /v1/oauth/microsoft/callback` | Público |
+| `GET /v1/oauth/ms/login` | Público |
+| `GET /v1/oauth/ms/callback` | Público |
 | Demais `/v1/**` | API key |
 
 ### Erros comuns
@@ -57,7 +57,7 @@ GET /health
 ### Iniciar autorização (operador)
 
 ```http
-GET /v1/oauth/microsoft/login
+GET /v1/oauth/ms/login
 ```
 
 **Response:** `302` para a URL de authorize da Microsoft.
@@ -65,7 +65,7 @@ GET /v1/oauth/microsoft/login
 ### Callback
 
 ```http
-GET /v1/oauth/microsoft/callback?code=...&state=...
+GET /v1/oauth/ms/callback?code=...&state=...
 ```
 
 **Response `200` (sucesso)**
@@ -82,7 +82,7 @@ GET /v1/oauth/microsoft/callback?code=...&state=...
 ### Status da caixa
 
 ```http
-GET /v1/oauth/microsoft/status
+GET /v1/oauth/ms/status
 X-API-Key: <your-api-key>
 ```
 

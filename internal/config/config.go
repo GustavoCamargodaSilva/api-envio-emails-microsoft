@@ -27,7 +27,7 @@ func Load() (Config, error) {
 		MSClientID:     os.Getenv("MS_CLIENT_ID"),
 		MSClientSecret: os.Getenv("MS_CLIENT_SECRET"),
 		MSTenant:       getEnv("MS_TENANT", "consumers"),
-		MSRedirectURI:  getEnv("MS_REDIRECT_URI", "http://localhost:8081/v1/oauth/microsoft/callback"),
+		MSRedirectURI:  getEnv("MS_REDIRECT_URI", "http://localhost:8081/v1/oauth/ms/callback"),
 		MSScopes: getEnv(
 			"MS_SCOPES",
 			"https://graph.microsoft.com/Mail.Send https://graph.microsoft.com/User.Read offline_access openid profile",

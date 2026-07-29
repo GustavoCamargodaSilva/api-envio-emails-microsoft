@@ -37,7 +37,7 @@ func main() {
 	}
 
 	log.Printf("api-envio-emails ouvindo em http://localhost:%s", cfg.Port)
-	log.Printf("autorize a caixa do site em http://localhost:%s/v1/oauth/microsoft/login", cfg.Port)
+	log.Printf("autorize a caixa do site em http://localhost:%s/v1/oauth/ms/login", cfg.Port)
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("server: %v", err)
 	}

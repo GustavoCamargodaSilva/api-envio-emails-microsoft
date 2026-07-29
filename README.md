@@ -44,7 +44,7 @@ cp .env.example .env
 | `MS_CLIENT_ID` | Para OAuth/envio | Application (client) ID |
 | `MS_CLIENT_SECRET` | Para OAuth/envio | Client secret (**segredo**) |
 | `MS_TENANT` | Não | Default `consumers` |
-| `MS_REDIRECT_URI` | Não | Default local: `http://localhost:8081/v1/oauth/microsoft/callback` |
+| `MS_REDIRECT_URI` | Não | Default local: `http://localhost:8081/v1/oauth/ms/callback` |
 | `TOKEN_STORE_PATH` | Não | Default `./data/tokens.json` (**não versionar**) |
 | `PORT` | Não | Default `8081` |
 
@@ -55,7 +55,7 @@ go test ./...
 go run ./cmd/server
 ```
 
-1. Abra `http://localhost:8081/v1/oauth/microsoft/login` e autorize com o **Outlook do site**.
+1. Abra `http://localhost:8081/v1/oauth/ms/login` e autorize com o **Outlook do site**.
 2. Chame os endpoints de envio com `X-API-Key: <sua-api-key>`.
 
 ## Documentação
@@ -69,7 +69,7 @@ go run ./cmd/server
 ## Microsoft Entra (resumo)
 
 1. Crie um **App registration** (Personal Microsoft accounts, ou misto).
-2. Cadastre Redirect URI Web: `http://localhost:8081/v1/oauth/microsoft/callback` (e a URI pública em produção).
+2. Cadastre Redirect URI Web: `http://localhost:8081/v1/oauth/ms/callback` (e a URI pública em produção).
 3. Crie um **client secret**.
 4. Permissões **Delegated** do Microsoft Graph: `Mail.Send`, `User.Read`.
 5. Use `MS_TENANT=consumers` para Outlook.com pessoal.
@@ -81,9 +81,9 @@ Passo a passo detalhado: [docs/architecture.md](./docs/architecture.md#microsoft
 | Método | Rota | Auth |
 |--------|------|------|
 | `GET` | `/health` | Público |
-| `GET` | `/v1/oauth/microsoft/login` | Público (operador) |
-| `GET` | `/v1/oauth/microsoft/callback` | Público (Microsoft) |
-| `GET` | `/v1/oauth/microsoft/status` | API key |
+| `GET` | `/v1/oauth/ms/login` | Público (operador) |
+| `GET` | `/v1/oauth/ms/callback` | Público (Microsoft) |
+| `GET` | `/v1/oauth/ms/status` | API key |
 | `POST` | `/v1/emails/send-by-tag` | API key |
 | `POST` | `/v1/emails/send` | API key |
 | `POST` | `/v1/emails/invites` | API key |
@@ -120,7 +120,7 @@ api-envio-emails/
 ## Limitações (MVP)
 
 - Contas Outlook.com gratuitas têm limites diários/anti-spam.
-- Se o refresh token for revogado, o operador precisa reabrir `/v1/oauth/microsoft/login`.
+- Se o refresh token for revogado, o operador precisa reabrir `/v1/oauth/ms/login`.
 - `202` do Graph significa “aceito para envio”, não entrega garantida.
 - Rate limit é por instância (memória local): 60 req/min por IP nos endpoints protegidos.
 

@@ -11,11 +11,12 @@ func NewRouter(h *Handler, apiKey string) http.Handler {
 	mux.HandleFunc("GET /health", h.Health)
 
 	// OAuth da caixa do site (operador). Login/callback abertos; status protegido.
-	mux.HandleFunc("GET /v1/oauth/microsoft/login", h.OAuthLogin)
-	mux.HandleFunc("GET /v1/oauth/microsoft/callback", h.OAuthCallback)
+	// Paths usam /ms/ (não "microsoft") — Azure Entra rejeita redirect URIs com "microsoft".
+	mux.HandleFunc("GET /v1/oauth/ms/login", h.OAuthLogin)
+	mux.HandleFunc("GET /v1/oauth/ms/callback", h.OAuthCallback)
 
 	protected := http.NewServeMux()
-	protected.HandleFunc("GET /v1/oauth/microsoft/status", h.OAuthStatus)
+	protected.HandleFunc("GET /v1/oauth/ms/status", h.OAuthStatus)
 	protected.HandleFunc("POST /v1/emails/send", h.SendGeneric)
 	protected.HandleFunc("POST /v1/emails/send-by-tag", h.SendByTag)
 	protected.HandleFunc("POST /v1/emails/invites", h.SendInvite)

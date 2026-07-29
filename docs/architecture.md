@@ -56,7 +56,7 @@ sequenceDiagram
     participant MS as Microsoft Entra
     participant Disk as tokens.json
 
-    Op->>API: GET /v1/oauth/microsoft/login
+    Op->>API: GET /v1/oauth/ms/login
     API->>API: Gera state (TTL 15 min)
     API-->>Op: 302 Authorize URL
     Op->>MS: Login + consent (caixa do site)

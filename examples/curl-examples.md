@@ -12,7 +12,7 @@ curl -s http://localhost:8081/health
 ## Status da caixa do site
 
 ```bash
-curl -s http://localhost:8081/v1/oauth/microsoft/status \
+curl -s http://localhost:8081/v1/oauth/ms/status \
   -H "X-API-Key: <your-api-key>"
 ```
 

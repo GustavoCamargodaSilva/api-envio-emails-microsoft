@@ -26,7 +26,7 @@ flowchart TB
     end
 
     Backend -->|X-API-Key| AuthMW --> Router
-    Operator -->|login/callback públicos| OAuth
+    Operator -->|login/callback com rate limit| OAuth
     OAuth --> Entra
     OAuth --> Store
     Router --> Tpl
@@ -35,6 +35,7 @@ flowchart TB
     Mailer --> Graph
 ```
 
+**Deploy OAuth:** exponha `/v1/oauth/ms/login` e `/callback` apenas em localhost, VPN ou túnel autenticado. Em produção pública, o risco é takeover da caixa do site. Rate limit: **10 req/min** por IP nessas rotas.
 ## Camadas
 
 | Pacote | Papel |
@@ -107,11 +108,14 @@ Em produção, cadastre a Redirect URI pública HTTPS correspondente ao serviço
 |----------|----------------|
 | API key | `X-API-Key` ou `Authorization: Bearer`; comparação em tempo constante |
 | Validação no boot | Falha se `API_KEY` vazia, curta (&lt; 24) ou valor fraco conhecido |
-| Rate limit | 60 req/min por IP nos endpoints protegidos (`429` + `Retry-After`) |
+| Rate limit | 60 req/min por IP nos endpoints com API key; **10 req/min** em OAuth login/callback (`429` + `Retry-After`) |
+| `TRUST_PROXY_HEADERS` | Se `true`, usa `X-Forwarded-For` no rate limit (só atrás de proxy que sanitiza o header) |
 | Headers | `nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`, HSTS |
 | OAuth state | Aleatório, TTL 15 min, uso único |
 | Token file | Escrito com permissão `0600` |
-| JSON | `DisallowUnknownFields` no decode |
+| JSON | `DisallowUnknownFields` + limite **1 MiB** (`413` se exceder) |
+| Destinatários | `net/mail.ParseAddress` em `to`/`cc`; máx. 50 por campo |
+| HTML | `htmlBody` cru **rejeitado**; exige `template` ou rotas por tag/tipo |
 
 ### Dados sensíveis (não publicar)
 

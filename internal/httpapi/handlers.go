@@ -142,41 +142,44 @@ type sendByTagBody struct {
 
 func (h *Handler) SendGeneric(w http.ResponseWriter, r *http.Request) {
 	var body sendBody
-	if err := decodeJSON(r, &body); err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]any{"error": "JSON inválido: " + err.Error()})
+	if err := decodeJSON(w, r, &body); err != nil {
+		writeDecodeError(w, err)
 		return
 	}
 
-	html := body.HTMLBody
-	mailType := "generic"
-	if body.Template != "" {
-		mailType = body.Template
-		rendered, err := h.renderer.Render(body.Template, body.Variables)
-		if err != nil {
-			writeJSON(w, http.StatusBadRequest, map[string]any{"error": err.Error()})
+	if strings.TrimSpace(body.Template) == "" {
+		if strings.TrimSpace(body.HTMLBody) != "" {
+			writeJSON(w, http.StatusBadRequest, map[string]any{
+				"error": "htmlBody cru não é permitido; use template ou POST /v1/emails/send-by-tag",
+			})
 			return
 		}
-		html = rendered
-		if body.Subject == "" {
-			body.Subject = defaultSubject(body.Template, body.Variables)
-		}
+		writeJSON(w, http.StatusBadRequest, map[string]any{
+			"error": "template é obrigatório",
+		})
+		return
 	}
 
-	h.send(w, r, mailType, body.Subject, html, body.To, body.CC, body.SaveToSentItems)
+	rendered, err := h.renderer.Render(body.Template, body.Variables)
+	if err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]any{"error": err.Error()})
+		return
+	}
+	if body.Subject == "" {
+		body.Subject = defaultSubject(body.Template, body.Variables)
+	}
+
+	h.send(w, r, body.Template, body.Subject, rendered, body.To, body.CC, body.SaveToSentItems)
 }
 
 func (h *Handler) SendByTag(w http.ResponseWriter, r *http.Request) {
 	var body sendByTagBody
-	if err := decodeJSON(r, &body); err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]any{"error": "JSON inválido: " + err.Error()})
+	if err := decodeJSON(w, r, &body); err != nil {
+		writeDecodeError(w, err)
 		return
 	}
 	if strings.TrimSpace(body.Tag) == "" {
 		writeJSON(w, http.StatusBadRequest, map[string]any{"error": "tag é obrigatória"})
-		return
-	}
-	if len(body.To) == 0 {
-		writeJSON(w, http.StatusBadRequest, map[string]any{"error": "informe ao menos um destinatário em to"})
 		return
 	}
 
@@ -209,8 +212,8 @@ func (h *Handler) SendCampaign(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) sendTyped(w http.ResponseWriter, r *http.Request, kind string) {
 	var body sendBody
-	if err := decodeJSON(r, &body); err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]any{"error": "JSON inválido: " + err.Error()})
+	if err := decodeJSON(w, r, &body); err != nil {
+		writeDecodeError(w, err)
 		return
 	}
 
@@ -234,6 +237,15 @@ func (h *Handler) send(
 	to, cc []string,
 	saveToSentItems *bool,
 ) {
+	if err := validateRecipientList("to", to, true); err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]any{"error": err.Error()})
+		return
+	}
+	if err := validateRecipientList("cc", cc, false); err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]any{"error": err.Error()})
+		return
+	}
+
 	requestID := newRequestID()
 	save := false
 	if saveToSentItems != nil {

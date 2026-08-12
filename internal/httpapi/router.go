@@ -10,10 +10,11 @@ func NewRouter(h *Handler, apiKey string) http.Handler {
 
 	mux.HandleFunc("GET /health", h.Health)
 
-	// OAuth da caixa do site (operador). Login/callback abertos; status protegido.
-	// Paths usam /ms/ (não "microsoft") — Azure Entra rejeita redirect URIs com "microsoft".
-	mux.HandleFunc("GET /v1/oauth/ms/login", h.OAuthLogin)
-	mux.HandleFunc("GET /v1/oauth/ms/callback", h.OAuthCallback)
+	// OAuth da caixa do site (operador). Mantém-se sem API key para o redirect Entra,
+	// mas com rate limit agressivo. Em produção, exponha só via VPN/localhost/túnel.
+	oauthLimited := RateLimitMiddleware(10, time.Minute)
+	mux.Handle("GET /v1/oauth/ms/login", oauthLimited(http.HandlerFunc(h.OAuthLogin)))
+	mux.Handle("GET /v1/oauth/ms/callback", oauthLimited(http.HandlerFunc(h.OAuthCallback)))
 
 	protected := http.NewServeMux()
 	protected.HandleFunc("GET /v1/oauth/ms/status", h.OAuthStatus)

@@ -3,6 +3,7 @@ package httpapi
 import (
 	"crypto/subtle"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -98,11 +99,14 @@ func RateLimitMiddleware(max int, interval time.Duration) func(http.Handler) htt
 }
 
 func clientIP(r *http.Request) string {
-	if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
-		if i := strings.IndexByte(fwd, ','); i > 0 {
-			return strings.TrimSpace(fwd[:i])
+	// Só confia em X-Forwarded-For quando atrás de proxy que sanitiza o header.
+	if strings.EqualFold(os.Getenv("TRUST_PROXY_HEADERS"), "true") {
+		if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
+			if i := strings.IndexByte(fwd, ','); i > 0 {
+				return strings.TrimSpace(fwd[:i])
+			}
+			return strings.TrimSpace(fwd)
 		}
-		return strings.TrimSpace(fwd)
 	}
 	return r.RemoteAddr
 }

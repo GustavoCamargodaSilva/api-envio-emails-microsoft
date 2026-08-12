@@ -19,18 +19,21 @@ Authorization: Bearer <your-api-key>
 | Rota | Auth |
 |------|------|
 | `GET /health` | Público |
-| `GET /v1/oauth/ms/login` | Público |
-| `GET /v1/oauth/ms/callback` | Público |
-| Demais `/v1/**` | API key |
+| `GET /v1/oauth/ms/login` | Público + rate limit 10/min |
+| `GET /v1/oauth/ms/callback` | Público + rate limit 10/min |
+| Demais `/v1/**` | API key + rate limit 60/min |
+
+Exponha OAuth apenas em rede confiável (localhost/VPN). Não deixe login/callback abertos na internet sem proteção adicional.
 
 ### Erros comuns
 
 | Status | Situação |
 |--------|----------|
-| 400 | JSON inválido, campos ausentes, tag/template inválido |
+| 400 | JSON inválido, campos ausentes, tag/template inválido, e-mail inválido, `htmlBody` cru |
 | 401 | API key ausente ou inválida |
 | 409 | Caixa Outlook não autorizada / precisa reauth |
-| 429 | Rate limit (60/min por IP) |
+| 413 | Corpo JSON &gt; 1 MiB |
+| 429 | Rate limit |
 | 502 | Falha no Microsoft Graph |
 
 ---
@@ -162,23 +165,13 @@ POST /v1/emails/send
 
 | Campo | Tipo | Obrigatório | Descrição |
 |-------|------|-------------|-----------|
-| to | string[] | Sim* | Destinatários |
-| cc | string[] | Não | Cópia |
-| subject | string | Condicional | Obrigatório se não houver subject default do template |
-| htmlBody | string | Condicional | HTML cru (se sem template) |
-| template | string | Não | `invite`, `confirmation`, `campaign` (e aliases) |
+| to | string[] | Sim | Destinatários (e-mails válidos; máx. 50) |
+| cc | string[] | Não | Cópia (e-mails válidos; máx. 50) |
+| subject | string | Condicional | Obrigatório se o template não tiver subject default |
+| template | string | **Sim** | `invite`, `confirmation`, `campaign` (e aliases) |
 | variables | object | Condicional | Variáveis do template |
 | saveToSentItems | boolean | Não | Default `false` |
-
-```json
-{
-  "to": ["recipient@example.com"],
-  "subject": "Teste",
-  "htmlBody": "<p>Olá</p>"
-}
-```
-
-Com template:
+| htmlBody | string | — | **Não permitido** (retorna 400); use template ou `send-by-tag` |
 
 ```json
 {

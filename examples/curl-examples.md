@@ -34,13 +34,13 @@ curl -s -X POST http://localhost:8081/v1/emails/send-by-tag \
   -d "{\"tag\":\"CONVITE_EDICAO_DESPESAS\",\"to\":[\"recipient@example.com\"],\"variables\":{\"emailConvidado\":\"recipient@example.com\",\"nomeUsuarioLogado\":\"Ana Silva\"}}"
 ```
 
-## Envio genérico
+## Envio genérico (com template)
 
 ```bash
 curl -s -X POST http://localhost:8081/v1/emails/send \
   -H "Content-Type: application/json" \
   -H "X-API-Key: <your-api-key>" \
-  -d "{\"to\":[\"recipient@example.com\"],\"subject\":\"Teste API\",\"htmlBody\":\"<p>Olá do site</p>\"}"
+  -d "{\"to\":[\"recipient@example.com\"],\"template\":\"confirmation\",\"variables\":{\"nome\":\"João\",\"acao\":\"Cadastro\",\"detalhes\":\"Ok\",\"remetenteNome\":\"Meu Site\"}}"
 ```
 
 ## Convite
